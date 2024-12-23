@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hire4consult/controller/jobs_controller/jobs_controller.dart';
 import 'package:hire4consult/model/jobs_model/jobs_model.dart';
 
-
 class JobsControllerConcrete with ChangeNotifier implements JobsController {
   final FirebaseFirestore _db = FirebaseFirestore.instance; // Updated
   final String path;
   late CollectionReference ref; // Use late initialization
-
 
   JobsControllerConcrete({required this.path}) {
     ref = _db.collection(path);
@@ -49,5 +47,4 @@ class JobsControllerConcrete with ChangeNotifier implements JobsController {
       }).toList();
     });
   }
-
 }

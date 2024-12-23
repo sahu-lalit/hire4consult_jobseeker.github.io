@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hire4consult/model/jobs_model/jobs_model.dart';
 
-class JobsDropdownsController extends ChangeNotifier{
+class JobsDropdownsController extends ChangeNotifier {
   String? selectedDepartment;
   String? selectedSpecialization;
   bool isSelectionMade = false;
@@ -16,7 +16,11 @@ class JobsDropdownsController extends ChangeNotifier{
     'Business Development',
     'Marketing',
     'Sales',
-    'Operations'
+    'Operations',
+    'Customer Support',
+    'Legal',
+    'Finance',
+    'Product Management'
   ];
 
   static List<String> specializations = [
@@ -26,7 +30,12 @@ class JobsDropdownsController extends ChangeNotifier{
     'GO',
     'iOS',
     'Javascript',
-    "HR Recruitment"
+    'HR Recruitment',
+    'Data Science',
+    'Machine Learning',
+    'Cybersecurity',
+    'DevOps',
+    'Cloud Computing'
   ];
 
   static List<String> skills = [
@@ -37,6 +46,12 @@ class JobsDropdownsController extends ChangeNotifier{
     'clean architecture',
     'mvvm',
     'api',
+    'graphql',
+    'docker',
+    'kubernetes',
+    'aws',
+    'azure',
+    'gcp'
   ];
 
   static List<String> region = [
@@ -44,8 +59,10 @@ class JobsDropdownsController extends ChangeNotifier{
     'APAC',
     'NA',
     'LATAM',
+    'EU',
+    'MEA',
+    'SA'
   ];
-
 
   // Update selected department
   void updateDepartment(String? department) {
@@ -69,7 +86,7 @@ class JobsDropdownsController extends ChangeNotifier{
     notifyListeners(); // Notify listeners to rebuild the UI
   }
 
-   void toggleSkillSelection(String skill, bool isSelected) {
+  void toggleSkillSelection(String skill, bool isSelected) {
     if (isSelected) {
       selectedSkills.add(skill);
     } else {
@@ -78,8 +95,7 @@ class JobsDropdownsController extends ChangeNotifier{
     notifyListeners();
   }
 
-
-    // Function to update the selected regions
+  // Function to update the selected regions
   void updateRegions(List<String> newSelectedRegions) {
     selectedRegions = newSelectedRegions;
     notifyListeners();

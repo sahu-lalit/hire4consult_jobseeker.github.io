@@ -109,6 +109,10 @@ class LoginPage extends StatelessWidget {
                                     }
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(content: Text(message)));
+                                    // Navigator.of(context).pushReplacement(
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             const HomePage()));
                                   },
                                   child: const Text("Login"),
                                 );
@@ -134,22 +138,54 @@ class LoginPage extends StatelessWidget {
                         const SizedBox(
                           height: 120,
                         ),
-                        Row(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("Login with"),
-                            const SizedBox(
-                              width: 14,
+                            // Header Text
+                            const Text(
+                              "Login with",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
                             ),
-                            Image.asset("assets/images/google.png"),
                             const SizedBox(
-                              width: 8,
+                                height: 16), // Spacing between text and icons
+
+                            // Row for Login Options
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Google Icon
+                                Image.asset(
+                                  "assets/images/google.png",
+                                  height: 32, // Adjust size as needed
+                                  width: 32,
+                                ),
+                                const SizedBox(
+                                    width: 12), // Spacing between elements
+
+                                // OR Text
+                                const Text(
+                                  "OR",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(
+                                    width: 12), // Spacing between elements
+
+                                // Apple Icon
+                                Image.asset(
+                                  "assets/images/apple.png",
+                                  height: 32, // Adjust size as needed
+                                  width: 32,
+                                ),
+                              ],
                             ),
-                            const Text("OR"),
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            Image.asset("assets/images/apple.png"),
                           ],
                         )
                       ],

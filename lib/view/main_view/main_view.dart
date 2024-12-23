@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hire4consult/controller/jobs_controller/jobs_controller_impl.dart';
@@ -16,6 +17,29 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? _profileImageUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfileImage();
+  }
+
+  Future<void> _loadUserProfileImage() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          _profileImageUrl = userDoc['profileImageUrl'];
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var jobsController = Provider.of<JobsControllerImpl>(context);
@@ -25,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         body: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0 , 0.0),
+              padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -37,16 +61,25 @@ class _HomePageState extends State<HomePage> {
                             image: AssetImage('assets/images/hire_logo.png'),
                             fit: BoxFit.cover)),
                   ),
-                  Text(
-                    'This is a Minimum Viable Product',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  Center(
+                    child: Text(
+                      'This is a Minimum Viable Product',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                        letterSpacing:
+                            1.2, // Add letter spacing for a modern look
+                      ),
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => ProfileView()));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProfileView()));
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.account_box,
                       size: 40,
                     ),
@@ -56,45 +89,86 @@ class _HomePageState extends State<HomePage> {
             ),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Consumer<JobsDropdownsController>(
-                  builder: (context, filterController, child) {
-                    return DropdownButton<String>(
-                      value: filterController.selectedDepartment,
-                      hint: const Text('Select Department'),
-                      items: JobsDropdownsController.department
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        filterController.updateDepartment(newValue);
-                      },
-                    );
-                  },
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 4.0),
+                  decoration: boxDecoration(),
+                  child: Consumer<JobsDropdownsController>(
+                    builder: (context, filterController, child) {
+                      return DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: filterController.selectedDepartment,
+                          hint: const Text(
+                            'Select Department',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          items: JobsDropdownsController.department
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(
+                                    fontSize: 16.0, color: Colors.black87),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            filterController.updateDepartment(newValue);
+                          },
+                          icon: Icon(Icons.arrow_drop_down,
+                              color: Colors.grey.shade700),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
+              // Specialization Dropdown
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Consumer<JobsDropdownsController>(
-                  builder: (context, filterController, child) {
-                    return DropdownButton<String>(
-                      value: filterController.selectedSpecialization,
-                      hint: const Text('Select Specialization'),
-                      items: JobsDropdownsController.specializations
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (newValue) {
-                        filterController.updateSpecialization(newValue);
-                      },
-                    );
-                  },
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 4.0),
+                  decoration: boxDecoration(),
+                  child: Consumer<JobsDropdownsController>(
+                    builder: (context, filterController, child) {
+                      return DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: filterController.selectedSpecialization,
+                          hint: const Text(
+                            'Select Specialization',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          items: JobsDropdownsController.specializations
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: const TextStyle(
+                                    fontSize: 16.0, color: Colors.black87),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {
+                            filterController.updateSpecialization(newValue);
+                          },
+                          icon: Icon(Icons.arrow_drop_down,
+                              color: Colors.grey.shade700),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               // Multi-Selectable Dropdown for Skills
@@ -108,22 +182,28 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                            vertical: 16.0, horizontal: 12.0),
+                        decoration: boxDecoration(),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
+                              style: filterController.selectedSkills.isEmpty
+                                  ? const TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.grey,
+                                    )
+                                  : const TextStyle(),
                               filterController.selectedSkills.isEmpty
                                   ? 'Select Skills'
                                   : filterController.selectedSkills.length == 1
                                       ? filterController.selectedSkills.first
                                       : '${filterController.selectedSkills.first}, ...',
                             ),
-                            const Icon(Icons.arrow_drop_down),
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.grey,
+                            ),
                           ],
                         ),
                       ),
@@ -142,21 +222,30 @@ class _HomePageState extends State<HomePage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 16, horizontal: 12),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
+                            vertical: 16.0, horizontal: 12.0),
+                        decoration: boxDecoration(),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(filterController.selectedRegions.isEmpty
-                                ? 'Select Region'
-                                : filterController.selectedRegions.first +
-                                    (filterController.selectedRegions.length > 1
-                                        ? '...'
-                                        : '')),
-                            const Icon(Icons.arrow_drop_down),
+                            Text(
+                                style: filterController.selectedSkills.isEmpty
+                                    ? const TextStyle(
+                                        fontSize: 16.0,
+                                        color: Colors.grey,
+                                      )
+                                    : const TextStyle(),
+                                filterController.selectedRegions.isEmpty
+                                    ? 'Select Region'
+                                    : filterController.selectedRegions.first +
+                                        (filterController
+                                                    .selectedRegions.length >
+                                                1
+                                            ? '...'
+                                            : '')),
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.grey,
+                            ),
                           ],
                         ),
                       ),
@@ -223,17 +312,48 @@ class _HomePageState extends State<HomePage> {
                     },
                   );
                 } else {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Please select a department and skill'),
-                        SizedBox(height: 20),
-                        SpinKitPouringHourGlass(
-                          color: Colors.orangeAccent,
-                          size: 50.0,
-                        )
-                      ],
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal:
+                              24.0), // Adds padding for better responsiveness
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Header Text
+                          const Text(
+                            'Select a Department and Skill',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center, // Center-align text
+                          ),
+                          const SizedBox(
+                              height: 16), // Spacing between text and loader
+
+                          // Subtitle Text
+                          Text(
+                            'We’re loading the options for you...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors
+                                  .grey[600], // Subtle grey text for emphasis
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24), // Spacing before loader
+
+                          // Loading Animation
+                          const SpinKitPouringHourGlass(
+                            color: Colors.orangeAccent,
+                            size: 50.0,
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
@@ -330,6 +450,22 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       },
+    );
+  }
+
+  boxDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12.0),
+      border: Border.all(color: Colors.grey.shade300, width: 1.5),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withAlpha(26), // 0.1 opacity = 26 in alpha
+          blurRadius: 8,
+          spreadRadius: 1,
+          offset: Offset(0, 4),
+        ),
+      ],
     );
   }
 }

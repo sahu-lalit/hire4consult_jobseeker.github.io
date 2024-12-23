@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hire4consult/controller/application_controller/application_controller_concrete.dart';
 import 'package:hire4consult/model/jobs_model/jobs_model.dart';
 import 'package:hire4consult/utils/locator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class JdView extends StatelessWidget {
   final JobsModel job;
@@ -26,48 +28,23 @@ class JdView extends StatelessWidget {
             Spacer(),
             ElevatedButton(
               onPressed: () async {
-                final applicationController =
-                    locator<ApplicationControllerConcrete>();
-                // Dummy user details for now
-                // Prepare the user details
-                Map<String, dynamic> userDetails = {
-                  'name': 'Arpit Rahi',
-                  'email': 'rk19official@gmail.com',
-                  'resumeLink': 'url_to_resume',
-                };
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  final userId = user.uid;
+                  final jobDocRef =
+                      FirebaseFirestore.instance.collection('jobs').doc(job.id);
 
-                // Prepare the job details (make sure this is the correct job data)
-                Map<String, dynamic> jobDetails = job.toJson();
+                  await jobDocRef.update({
+                    'applicants': FieldValue.arrayUnion([userId])
+                  });
 
-                // Combine all the data
-                // Map<String, dynamic> applicationData = {
-                //   'jobId': job.id!,
-                //   'userId': userId,
-                //   'applicationDate': DateTime.now().toIso8601String(),
-                //   'jobDetails': jobDetails,
-                //   'userDetails': userDetails,
-                // };
-
-                // Submit the application
-                try {
-                  await applicationController.submitApplication(
-                    job.id!,
-                    userId,
-                    jobDetails,
-                    userDetails,
-                  );
-
-              
-                  // Show success message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Application submitted successfully')),
-                  );
-                } catch (e) {
-                  // Show error message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error submitting application: $e')),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content:
+                          Text('You have successfully applied for the job!')));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(
+                          'You need to be logged in to apply for the job.')));
                 }
               },
               child: Text('Apply'),

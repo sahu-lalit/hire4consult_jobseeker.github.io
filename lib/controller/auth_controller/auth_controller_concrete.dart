@@ -17,13 +17,30 @@ class AuthControllerConcrete with ChangeNotifier implements AuthController {
   }
 
   @override
-  Future<String?> signUpController(
-      {required String email, required password}) async {
+  Future<String?> signUpController({
+    required String email,
+    required dynamic password,
+    required String username,
+    required String resumeLink,
+  }) async {
     _setLoading(true);
     await Future.delayed(const Duration(seconds: 3));
     try {
-      await FirebaseAuth.instance
+      UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+
+      String uid = userCredential.user!.uid;
+
+      // Step 3: Save additional user data to Firestore
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'uid': uid,
+        'email': email,
+        'createdAt': FieldValue.serverTimestamp(),
+        'username': username,
+        'resumeLink': resumeLink,
+        'passwrod': password,
+      });
+
       return 'Success';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {

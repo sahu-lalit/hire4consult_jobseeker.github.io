@@ -12,6 +12,10 @@ class SignupPage extends StatelessWidget {
 
   final TextEditingController _passwordController = TextEditingController();
 
+  final TextEditingController _userNameController = TextEditingController();
+
+  final TextEditingController _resumeLinkController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,10 +45,11 @@ class SignupPage extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         TextField(
+                          controller: _userNameController,
                           decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(), //<-- SEE HERE
@@ -61,7 +66,33 @@ class SignupPage extends StatelessWidget {
                               ),
                               hintText: "Full Name"),
                         ),
-                        const SizedBox(height: 20),
+
+                        // const SizedBox(
+                        //   height: 20,
+                        // ),
+                        // TextField(
+                        //   controller: _resumeLinkController,
+                        //   decoration: InputDecoration(
+                        //       enabledBorder: OutlineInputBorder(
+                        //         borderSide: const BorderSide(), //<-- SEE HERE
+                        //         borderRadius: BorderRadius.circular(10.0),
+                        //       ),
+                        //       focusedBorder: const OutlineInputBorder(
+                        //         //<-- SEE HERE
+                        //         borderSide:
+                        //             BorderSide(color: Colors.blueAccent),
+                        //       ),
+                        //       errorBorder: const OutlineInputBorder(
+                        //         //<-- SEE HERE
+                        //         borderSide: BorderSide(color: Colors.redAccent),
+                        //       ),
+                        //       hintText: "Resume Link"),
+                        // ),
+
+                        const SizedBox(
+                          height: 20,
+                        ),
+
                         TextField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -113,12 +144,15 @@ class SignupPage extends StatelessWidget {
                                   )
                                 : ElevatedButton(
                                     onPressed: () async {
-                                      final message =
-                                          await signupController
-                                              .signUpController(
-                                                  email: _emailController.text,
-                                                  password:
-                                                      _passwordController.text);
+                                      final message = await signupController
+                                          .signUpController(
+                                              email: _emailController.text,
+                                              password:
+                                                  _passwordController.text,
+                                              username:
+                                                  _userNameController.text,
+                                              resumeLink:
+                                                  _resumeLinkController.text);
                                       if (message!.contains('Success')) {
                                         Navigator.of(context).pushReplacement(
                                             MaterialPageRoute(
